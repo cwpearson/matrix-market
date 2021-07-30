@@ -111,16 +111,19 @@ public:
     Ordinal num_cols() const { return ncols_; }
 };
 
-/*how to create a Scalar S from various matrix entries*/
+/* convert `pattern` matrix to Scalar S*/
 template <typename S>
 S from_pattern() { return S(1); }
 
+/* convert `real` matrix to Scalar S*/
 template <typename S>
 S from_real(double re) { return S(re); }
 
+/* convert `integer` matrix to Scalar S*/
 template <typename S>
 S from_integer(int64_t i) { return S(i); }
 
+/* convert `complex` matrix to Scalar S*/
 template <typename S>
 S from_complex(std::complex<double> c) { return S(std::abs(c)); }
 template <>
@@ -128,6 +131,7 @@ std::complex<float> from_complex(std::complex<double> c) { return std::complex<f
 template <>
 std::complex<double> from_complex(std::complex<double> c) { return std::complex<double>(c.real(), c.imag()); }
 
+/* define complex conjugate operation for non-complex types */
 template <typename S>
 S conj(S s) { return s; }
 template <>
@@ -138,7 +142,6 @@ std::complex<double> conj(std::complex<double> s) { return std::conj(s); }
 template <typename Ordinal, typename Scalar, typename Offset = size_t>
 class MtxReader
 {
-
 private:
     Info info_;
 
