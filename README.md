@@ -120,3 +120,8 @@ This means that coo.nnz() may not be the number of entries listed in the `.mtx` 
 * `data/08blocks.mtx`: square, coordinate integer general 
 * `data/Trefethen_20b`: coordinate integer symmetric
 * `data/mhd1280b`: coordinate complex Hermitian
+
+## License
+
+This code is released under the GPLv3 license (please see the `LICENSE` file).
+The test matrix data is provided by the SuiteSparse Matrix Collection and is not covered by the license.

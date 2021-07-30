@@ -1,3 +1,6 @@
+# Copyright (C) 2021 Carl Pearson
+# This code is released under the GPLv3 license
+
 cmake_minimum_required(VERSION 3.8 FATAL_ERROR)
 
 project(stencil LANGUAGES CXX VERSION 0.1.0.0)

@@ -1,21 +1,7 @@
-add_executable(readme readme.cpp)
+# Copyright (C) 2021 Carl Pearson
+# This code is released under the GPLv3 license
 
-target_compile_options(readme PRIVATE
- -Wall
- -Wextra
- -Wcast-align;
- -Wdisabled-optimization;
- -Wformat=2;
- -Winit-self;
- -Wlogical-op'
- -Wmissing-include-dirs;
- -Woverloaded-virtual;
- -Wpointer-arith;
- -Wshadow;
- -Wstrict-aliasing;
- -Wswitch-enum;
- -Wvla;
-)
+add_executable(readme readme.cpp)
 
 target_include_directories(readme PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../include)
 target_link_libraries(readme mm)
