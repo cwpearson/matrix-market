@@ -11,6 +11,7 @@
 #include <cmath>
 #include <stdexcept>
 #include <complex>
+#include <algorithm>
 
 struct Info
 {
