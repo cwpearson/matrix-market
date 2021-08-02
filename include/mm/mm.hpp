@@ -108,12 +108,13 @@ public:
     };
     typedef Entry entry_type;
 
-    std::vector<Entry> entries;
+    std::vector<entry_type> entries;
 
     Offset nnz() const { return Offset(entries.size()); }
     Ordinal num_rows() const { return nrows_; }
     Ordinal num_cols() const { return ncols_; }
 };
+
 
 /* convert `pattern` matrix to Scalar S*/
 template <typename S>
@@ -253,7 +254,7 @@ private:
 
 public:
     using coo_type = COO<Ordinal, Scalar, Offset>;
-    using coo_entry_type = typename coo_type::Entry;
+    using coo_entry_type = typename coo_type::entry_type;
 
     MtxReader(const std::string &path) : path_(path)
     {
