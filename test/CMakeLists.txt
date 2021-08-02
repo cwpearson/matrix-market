@@ -1,7 +1,8 @@
+# Copyright (C) 2021 Carl Pearson
+# This code is released under the GPLv3 license
+
 add_executable(test-cpu
 test.cpp)
-
-
 
 target_compile_options(test-cpu PRIVATE
  -Wall
