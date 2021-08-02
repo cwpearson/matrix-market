@@ -47,6 +47,7 @@ int main(int argc, char **argv) {
             for (entry_t &e : res.entries) {
                 sMax = std::max(sMax, std::abs(e.e));
             }
+            std::cout << "," << sMax << std::flush;
         }
 
         // count diagonal entries
@@ -78,78 +79,80 @@ int main(int argc, char **argv) {
         // their values, so
         // each entry contributes (i,j) and we just correlate all the x coordinates
         // with all the y coordinates
-
-        double xbar = 0;
-        double ybar = 0;
-        for (size_t i = 0; i < res.entries.size(); ++i) {
-            xbar += res.entries[i].i;
-            ybar += res.entries[i].j;
-        }
-        xbar /= res.entries.size();
-        ybar /= res.entries.size();
-
-        // pcc = A / (BC)
-        double a=0, b=0, c=0;
-        for (size_t i = 0; i < res.entries.size(); ++i) {
-            a += (res.entries[i].i - xbar) * (res.entries[i].j - ybar);
-            b += std::pow(res.entries[i].i - xbar, 2.0);
-            c += std::pow(res.entries[i].j - ybar, 2.0);
-        }
-        b = std::sqrt(b);
-        c = std::sqrt(c);
-        const double r = a / (b*c);
-        std::cout << "," << r << std::flush;
-
-
-        // hopkins statistic
-        const int m = 100;
-        double su = 0;
-        for (int mi = 0; mi < m; ++mi) {
-
-            // random point in matrix
-            int i = rand() % res.num_rows();
-            int j = rand() % res.num_cols();
-
-            // find closest non-zero
-            double mind = std::numeric_limits<double>::infinity();
-            for (size_t ei = 0; ei < res.entries.size(); ++ei) {
-                int xi = res.entries[ei].i;
-                int xj = res.entries[ei].j;
-                double d = std::sqrt(std::pow(i - xi, 2) + std::pow(j - xj, 2));
-                mind = std::min(mind, d);
-                
+        {
+            double xbar = 0;
+            double ybar = 0;
+            for (size_t i = 0; i < res.entries.size(); ++i) {
+                xbar += res.entries[i].i;
+                ybar += res.entries[i].j;
             }
-            su += mind;
+            xbar /= res.entries.size();
+            ybar /= res.entries.size();
+
+            // pcc = A / (BC)
+            double a=0, b=0, c=0;
+            for (size_t i = 0; i < res.entries.size(); ++i) {
+                a += (res.entries[i].i - xbar) * (res.entries[i].j - ybar);
+                b += std::pow(res.entries[i].i - xbar, 2.0);
+                c += std::pow(res.entries[i].j - ybar, 2.0);
+            }
+            b = std::sqrt(b);
+            c = std::sqrt(c);
+            const double r = a / (b*c);
+            std::cout << "," << r << std::flush;
         }
 
-        double sw = 0;
-        const size_t min = 0;
-        const size_t max = res.entries.size();
-        std::default_random_engine generator;
-        std::uniform_int_distribution<size_t> distribution(min,max);
-        
-        for (int mi = 0; mi < m; ++mi) {
+        {
+            // hopkins statistic
+            const int m = 100;
+            double su = 0;
+            for (int mi = 0; mi < m; ++mi) {
 
-            // random non-zero in matrix
-            size_t ii =  distribution(generator);
-            int i = res.entries[ii].i;
-            int j = res.entries[ii].j;
+                // random point in matrix
+                int i = rand() % res.num_rows();
+                int j = rand() % res.num_cols();
 
-            // find closest non-zero
-            double mind = std::numeric_limits<double>::infinity();
-            for (size_t ei = 0; ei < res.entries.size(); ++ei) {
-                if (ei == ii) {
-                    continue; // skip self
+                // find closest non-zero
+                double mind = std::numeric_limits<double>::infinity();
+                for (size_t ei = 0; ei < res.entries.size(); ++ei) {
+                    int xi = res.entries[ei].i;
+                    int xj = res.entries[ei].j;
+                    double d = std::sqrt(std::pow(i - xi, 2) + std::pow(j - xj, 2));
+                    mind = std::min(mind, d);
+                    
                 }
-                int xi = res.entries[ei].i;
-                int xj = res.entries[ei].j;
-                double d = std::sqrt(std::pow(i - xi, 2.0) + std::pow(j - xj, 2.0));
-                mind = std::min(mind, d);
+                su += mind;
             }
-            sw += mind;
-        }
 
-        std::cout << "," << su / (su + sw);
+            double sw = 0;
+            const size_t min = 0;
+            const size_t max = res.entries.size();
+            std::default_random_engine generator;
+            std::uniform_int_distribution<size_t> distribution(min,max);
+            
+            for (int mi = 0; mi < m; ++mi) {
+
+                // random non-zero in matrix
+                size_t ii =  distribution(generator);
+                int i = res.entries[ii].i;
+                int j = res.entries[ii].j;
+
+                // find closest non-zero
+                double mind = std::numeric_limits<double>::infinity();
+                for (size_t ei = 0; ei < res.entries.size(); ++ei) {
+                    if (ei == ii) {
+                        continue; // skip self
+                    }
+                    int xi = res.entries[ei].i;
+                    int xj = res.entries[ei].j;
+                    double d = std::sqrt(std::pow(i - xi, 2.0) + std::pow(j - xj, 2.0));
+                    mind = std::min(mind, d);
+                }
+                sw += mind;
+            }
+
+            std::cout << "," << su / (su + sw);
+        }
 
         // no error
         std::cout << "," << std::endl;
