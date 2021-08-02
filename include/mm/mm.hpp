@@ -85,7 +85,7 @@ public:
             {
                 return true;
             }
-            else if (a.i > a.i)
+            else if (a.i > b.i)
             {
                 return false;
             }
