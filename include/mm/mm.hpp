@@ -373,6 +373,7 @@ public:
                     entry.e = conj(entry.e);
                     coo.entries.push_back(entry);
                 }
+                break;
             }
             default:
                 throw std::logic_error("must be general, skew-symmetric or symmetric");
