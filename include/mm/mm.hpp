@@ -225,7 +225,7 @@ private:
                 }
                 else if ("hermitian" == to_lower(symmetry))
                 {
-                    ret.symmetry = Info::Symmetry::GENERAL;
+                    ret.symmetry = Info::Symmetry::HERMITIAN;
                 }
                 else if ("skew-symmetric" == to_lower(symmetry))
                 {

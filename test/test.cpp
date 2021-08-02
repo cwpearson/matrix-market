@@ -60,7 +60,20 @@ int test_read(const std::string &path, Ordinal nrows, Ordinal ncols, Offset nnz)
     }
     else if (std::string::npos != path.find("mhd1280b.mtx"))
     {
-        if (entry_type(34, 1, from_complex<Scalar>(std::complex<double>(7.21908598e-5, -6.04225745e-19))) != coo.entries[5]) {
+        entry_type expected2(3, 1, from_complex<Scalar>(std::complex<double>(.000144380768, -1.11464849e-18)));
+        entry_type expected3(1, 3, from_complex<Scalar>(std::complex<double>(.000144380768, 1.11464849e-18)));
+        if (expected2 != coo.entries[2]) {
+            std::cerr << "ERR: unexpected entry in " << path << "\n";
+            auto entry = coo.entries[2];
+            std::cerr << entry.i << " " << entry.j << " " << entry.e << "\n";
+            std::cerr << expected2.i << " " << expected2.j << " " << expected2.e << "\n";
+            return 1;
+        }
+        if (expected3 != coo.entries[3]) {
+            std::cerr << "ERR: unexpected entry in " << path << "\n";
+            auto entry = coo.entries[3];
+            std::cerr << entry.i << " " << entry.j << " " << entry.e << "\n";
+            std::cerr << expected3.i << " " << expected3.j << " " << expected3.e << "\n";
             return 1;
         }
     }
@@ -97,9 +110,9 @@ int main(int argc, char **argv)
     if (test_read<int, std::complex<float>>(dataDir + "/Trefethen_20b.mtx", 19,19, 147))
         return 1;
 
-    if (test_read<int, float>(dataDir + "/mhd1280b.mtx", 1280, 1280, 12029))
+    if (test_read<int, float>(dataDir + "/mhd1280b.mtx", 1280, 1280, 22778))
         return 1;
-    if (test_read<int, std::complex<float>>(dataDir + "/mhd1280b.mtx", 1280, 1280, 12029))
+    if (test_read<int, std::complex<float>>(dataDir + "/mhd1280b.mtx", 1280, 1280, 22778))
         return 1;
 
     return 0;
