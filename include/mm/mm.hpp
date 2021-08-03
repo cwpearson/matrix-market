@@ -119,8 +119,8 @@ template <typename Ordinal, typename Scalar, typename Offset = size_t>
 class CSR
 {
 private:
-    std::vector<Ordinal> rowPtr_;
-    std::vector<Offset> colInd_;
+    std::vector<Offset> rowPtr_;
+    std::vector<Ordinal> colInd_;
     std::vector<Scalar> val_;
     Ordinal ncols_;
 public:
@@ -176,8 +176,8 @@ public:
     }
 
     // underlying container
-    const std::vector<Ordinal> &row_ptr() const {return rowPtr_;}
-    const std::vector<Offset> & col_ind() const {return colInd_;}
+    const std::vector<Offset> &row_ptr() const {return rowPtr_;}
+    const std::vector<Ordinal> & col_ind() const {return colInd_;}
     const std::vector<Scalar> & val() const {return val_;}
 
 };
