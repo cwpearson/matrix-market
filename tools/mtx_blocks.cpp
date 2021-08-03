@@ -3,7 +3,8 @@
 
 #include <algorithm>
 #include <limits>
-#include <random>
+// #include <random>
+#include <map>
 
 struct Block {
     int i;
@@ -86,6 +87,7 @@ int nnz_in_blocks(const int nrows, const int ncols, const std::vector<Entry> &en
 }
 #endif
 
+#if 0
 /* count non-zeros in blocks aligned to blockSize x blockSize 
 */
 int nnz_aligned_blocks(const int nrows, const int ncols, const KD &kd, const int blockSize, const float density) {
@@ -100,6 +102,7 @@ int nnz_aligned_blocks(const int nrows, const int ncols, const KD &kd, const int
     }
     return tot;
 }
+#endif
 
 using Ordinal = int64_t;
 using Scalar = float;
@@ -108,6 +111,7 @@ using reader_t = MtxReader<Ordinal, Scalar, Offset>;
 using coo_t = reader_t::coo_type;
 using entry_t = coo_t::entry_type;
 
+#if 0
 /* count non-zeros in blocks aligned to blockSize x blockSize 
 */
 int nnz_aligned_blocks2(const coo_t &mat, const int blockSize, const float density) {
@@ -136,6 +140,54 @@ int nnz_aligned_blocks2(const coo_t &mat, const int blockSize, const float densi
     }
     return tot;
 }
+#endif
+
+struct Point {
+    int i;
+    int j;
+
+    bool operator<(const Point &rhs) const {
+        if (i < rhs.i) {
+            return true;
+        } else if (i > rhs.i) {
+            return false;
+        } else {
+            return j < rhs.j;
+        }
+    }
+};
+
+/* count non-zeros in blocks aligned to blockSize x blockSize 
+*/
+std::vector<int> nnz_aligned_blocks3(const coo_t &mat, const int blockSize, const std::vector<float> &densities) {
+
+    // number of blocks for each provided density
+    std::vector<int> counts(densities.size(), 0);
+
+    // count population of all blocks
+    std::map<Point, int> blockPops;
+    for (const entry_t &e : mat.entries) {
+        Point b;
+        b.i = e.i / blockSize;
+        b.j = e.j / blockSize;
+
+        // insert p,0 if it doesn't exist.
+        // either way, return iterator to blockPops[p]
+        blockPops.emplace(b, 0).first->second += 1;
+    }
+
+
+    // sum up population of dense blocks
+    for (const auto &kv : blockPops) {
+        for (size_t di = 0; di < densities.size(); ++di) {
+            if (kv.second >= densities[di] * blockSize * blockSize) {
+                counts[di] += kv.second;
+            }
+        }
+    }
+
+    return counts;
+}
 
 int main(int argc, char **argv) {
 
@@ -143,7 +195,7 @@ int main(int argc, char **argv) {
         std::cerr << "USAGE: " << argv[0] << " input.mtx...\n";
     }
 
-    std::vector<float> densities{0.1, 0.25, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0};
+    const std::vector<float> densities{0.1, 0.25, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0};
 
 
     std::cout << "file,rows,cols,nnz";
@@ -180,7 +232,7 @@ int main(int argc, char **argv) {
         std::cout << "\n";
 #endif
 
-#if 1
+#if 0
         // convert to KD::Point
         std::vector<KD::Point> ps;
         for (entry_t &e : mat.entries) {
@@ -192,13 +244,18 @@ int main(int argc, char **argv) {
 
         for (float density : densities) {
             std::cout << "," << nnz_aligned_blocks(mat.num_rows(), mat.num_cols(), kd, 16, density) << std::flush;
-            break;
         }
         std::cout << "\n";
 #endif
-    }
 
-    
+#if 1
+        auto counts = nnz_aligned_blocks3(mat, 16, densities);
+        for (int count : counts) {
+            std::cout << "," << count << std::flush;
+        }
+        std::cout << "\n";
+#endif
 
-        
+
+    } 
 }
