@@ -4,11 +4,45 @@
 #include "mm/mm.hpp"
 
 template <typename Ordinal, typename Scalar, typename Offset = size_t>
+bool contains_one(const COO<Ordinal, Scalar, Offset> &coo, Ordinal i, Ordinal j, Scalar s) {
+
+    typedef COO<Ordinal, Scalar, Offset> coo_t;
+    typedef typename coo_t::entry_type entry_t;
+
+    int count = 0;
+    for (const entry_t &e : coo.entries) {
+        if (entry_t(i, j, s) == e) {
+            ++count;
+        }
+    }
+    return count == 1;
+}
+
+template <typename Ordinal, typename Scalar, typename Offset = size_t>
+bool contains_one(const CSR<Ordinal, Scalar, Offset> &csr, Ordinal i, Ordinal j, Scalar s) {
+
+    int count = 0;
+    for (Ordinal ji = csr.row_ptr(i); ji < csr.row_ptr(i+1); ++ji) {
+        if (csr.col_ind(ji) == j) {
+            if (csr.val(ji) == s) {
+                ++count;
+            } else {
+                return false;
+            }
+        }
+    }
+
+    return count == 1;
+}
+
+
+template <typename Ordinal, typename Scalar, typename Offset = size_t>
 int test_read(const std::string &path, Ordinal nrows, Ordinal ncols, Offset nnz)
 {
 
     typedef COO<Ordinal, Scalar, Offset> coo_type;
     typedef typename coo_type::entry_type entry_type;
+    typedef CSR<Ordinal, Scalar, Offset> csr_type;
 
     MtxReader<Ordinal, Scalar, Offset> reader(path);
     if (!reader)
@@ -18,6 +52,7 @@ int test_read(const std::string &path, Ordinal nrows, Ordinal ncols, Offset nnz)
     }
 
     coo_type coo = reader.read_coo();
+    csr_type csr(coo);
 
     if (nnz != coo.nnz())
     {
@@ -35,17 +70,40 @@ int test_read(const std::string &path, Ordinal nrows, Ordinal ncols, Offset nnz)
         return 1;
     }
 
+    if (nnz != csr.nnz())
+    {
+        std::cerr << "ERR: expected " << nnz << " got " << csr.nnz() << " nnz in CSR " << path << "\n";
+        return 1;
+    }
+    if (nrows != csr.num_rows())
+    {
+        std::cerr << "ERR: expected " << nrows << " got " << csr.num_rows() << " CSR rows\n";
+        return 1;
+    }
+    if (ncols != csr.num_cols())
+    {
+        std::cerr << "ERR: expected " << ncols << " got " << csr.num_cols() << " CSR cols\n";
+        return 1;
+    }
+
+    
+
     if (std::string::npos != path.find("abb313.mtx"))
     {
-        if (entry_type(9, 0, from_integer<Scalar>(1)) != coo.entries[2]) {
-            std::cerr << "ERR: unexpected entry in " << path << "\n";
+        if (!contains_one(coo, 9, 0, from_integer<Scalar>(1))) {
+            std::cerr << "ERR: unexpected COO entry in " << path << "\n";
+            return 1;
+        }
+        if (!contains_one(csr, 9, 0, from_integer<Scalar>(1))) {
+            std::cerr << "ERR: unexpected CSR entry in " << path << "\n";
             return 1;
         }
     }
     else if (std::string::npos != path.find("08blocks.mtx"))
     {
-        if (entry_type(36, 1, from_integer<Scalar>(33)) != coo.entries[2]) {
-            std::cerr << "ERR: unexpected entry in " << path << "\n";
+
+        if (!contains_one(csr, 36, 1, from_integer<Scalar>(33))) {
+            std::cerr << "ERR: unexpected CSR entry in " << path << "\n";
             return 1;
         }
     }
@@ -60,20 +118,21 @@ int test_read(const std::string &path, Ordinal nrows, Ordinal ncols, Offset nnz)
     }
     else if (std::string::npos != path.find("mhd1280b.mtx"))
     {
-        entry_type expected2(3, 1, from_complex<Scalar>(std::complex<double>(.000144380768, -1.11464849e-18)));
-        entry_type expected3(1, 3, from_complex<Scalar>(std::complex<double>(.000144380768, 1.11464849e-18)));
-        if (expected2 != coo.entries[2]) {
-            std::cerr << "ERR: unexpected entry in " << path << "\n";
-            auto entry = coo.entries[2];
-            std::cerr << entry.i << " " << entry.j << " " << entry.e << "\n";
-            std::cerr << expected2.i << " " << expected2.j << " " << expected2.e << "\n";
+
+        if (!contains_one(coo, 3, 1, from_complex<Scalar>(std::complex<double>(.000144380768, -1.11464849e-18)))) {
+            std::cerr << "ERR: unexpected COO entry in " << path << "\n";
             return 1;
         }
-        if (expected3 != coo.entries[3]) {
-            std::cerr << "ERR: unexpected entry in " << path << "\n";
-            auto entry = coo.entries[3];
-            std::cerr << entry.i << " " << entry.j << " " << entry.e << "\n";
-            std::cerr << expected3.i << " " << expected3.j << " " << expected3.e << "\n";
+        if (!contains_one(coo, 1, 3, from_complex<Scalar>(std::complex<double>(.000144380768, 1.11464849e-18)))) {
+            std::cerr << "ERR: unexpected COO entry in " << path << "\n";
+            return 1;
+        }
+        if (!contains_one(csr, 3, 1, from_complex<Scalar>(std::complex<double>(.000144380768, -1.11464849e-18)))) {
+            std::cerr << "ERR: unexpected csr entry in " << path << "\n";
+            return 1;
+        }
+        if (!contains_one(csr, 1, 3, from_complex<Scalar>(std::complex<double>(.000144380768, 1.11464849e-18)))) {
+            std::cerr << "ERR: unexpected csr entry in " << path << "\n";
             return 1;
         }
     }

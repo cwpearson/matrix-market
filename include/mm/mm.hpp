@@ -115,6 +115,74 @@ public:
     Ordinal num_cols() const { return ncols_; }
 };
 
+template <typename Ordinal, typename Scalar, typename Offset = size_t>
+class CSR
+{
+private:
+    std::vector<Ordinal> rowPtr_;
+    std::vector<Offset> colInd_;
+    std::vector<Scalar> val_;
+    Ordinal ncols_;
+public:
+
+    CSR(const COO<Ordinal, Scalar, Offset> &coo) : ncols_(coo.num_cols()) {
+        typedef COO<Ordinal, Scalar, Offset> coo_t;
+        typedef typename coo_t::entry_type entry_t;
+
+        // sort by rows, then cols within row
+        coo_t sorted(coo);
+        std::sort(sorted.entries.begin(), sorted.entries.end(), entry_t::by_ij);
+
+
+        for (const entry_t &e : sorted.entries)
+        {
+            while (Ordinal(rowPtr_.size()) <= e.i)
+            {
+                rowPtr_.push_back(colInd_.size());
+            }
+            colInd_.push_back(e.j);
+            val_.push_back(e.e);
+        }
+        while (Ordinal(rowPtr_.size()) < coo.num_rows() + 1)
+        {
+            rowPtr_.push_back(colInd_.size());
+        }
+
+        
+    }
+
+    Offset nnz() const { return Offset(val_.size()); }
+    Ordinal num_rows() const {
+        if (rowPtr_.size() < 2) {
+            return 0;
+        } else {
+            return rowPtr_.size() - 1;
+        }
+
+    }
+    Ordinal num_cols() const { return ncols_; }
+
+    const Offset &row_ptr(Ordinal i) const {
+        if (Offset(i) >= Offset(rowPtr_.size()) || i < Ordinal(0)) {
+            throw std::runtime_error("OOB access through row_ptr()");
+        }
+        return rowPtr_[i];
+    }
+    const Ordinal &col_ind(Offset i) const {
+        return colInd_[i];
+    }
+    const Scalar &val(Offset i) const {
+        return val_[i];
+    }
+
+    // underlying container
+    const std::vector<Ordinal> &row_ptr() const {return rowPtr_;}
+    const std::vector<Offset> & col_ind() const {return colInd_;}
+    const std::vector<Scalar> & val() const {return val_;}
+
+};
+
+
 
 /* convert `pattern` matrix to Scalar S*/
 template <typename S>
