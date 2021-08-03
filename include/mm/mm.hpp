@@ -323,6 +323,7 @@ private:
 public:
     using coo_type = COO<Ordinal, Scalar, Offset>;
     using coo_entry_type = typename coo_type::entry_type;
+    using csr_type = CSR<Ordinal, Scalar, Offset>;
 
     MtxReader(const std::string &path) : path_(path)
     {
