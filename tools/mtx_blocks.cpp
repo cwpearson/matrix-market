@@ -157,12 +157,19 @@ struct Point {
     }
 };
 
+
+struct Result {
+    int blocks; // number of blocks
+    int nnz; // number of non-zeros in blocks
+    Result() : blocks(0), nnz(0) {}
+};
+
 /* count non-zeros in blocks aligned to blockSize x blockSize 
 */
-std::vector<int> nnz_aligned_blocks3(const coo_t &mat, const int blockSize, const std::vector<float> &densities) {
+std::vector<Result> nnz_aligned_blocks3(const coo_t &mat, const int blockSize, const std::vector<float> &densities) {
 
     // number of blocks for each provided density
-    std::vector<int> counts(densities.size(), 0);
+    std::vector<Result> counts(densities.size());
 
     // count population of all blocks
     std::map<Point, int> blockPops;
@@ -180,8 +187,9 @@ std::vector<int> nnz_aligned_blocks3(const coo_t &mat, const int blockSize, cons
     // sum up population of dense blocks
     for (const auto &kv : blockPops) {
         for (size_t di = 0; di < densities.size(); ++di) {
-            if (kv.second >= densities[di] * blockSize * blockSize) {
-                counts[di] += kv.second;
+            if (float(kv.second) / (blockSize * blockSize) >= densities[di]) {
+                counts[di].blocks += 1;
+                counts[di].nnz += kv.second;
             }
         }
     }
@@ -200,7 +208,7 @@ int main(int argc, char **argv) {
 
     std::cout << "file,rows,cols,nnz";
     for (float density : densities) {
-        std::cout << "," << density;
+        std::cout << "," << "blocks (" << density << "),nnz (" << density << ")";
     }
     std::cout << "\n";
 
@@ -250,8 +258,8 @@ int main(int argc, char **argv) {
 
 #if 1
         auto counts = nnz_aligned_blocks3(mat, 16, densities);
-        for (int count : counts) {
-            std::cout << "," << count << std::flush;
+        for (const Result &count : counts) {
+            std::cout << "," << count.blocks  << "," << count.nnz << std::flush;
         }
         std::cout << "\n";
 #endif
