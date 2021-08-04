@@ -126,6 +126,12 @@ Print counts of dense blocks in the provided matrix.
 
 ### tools/mtx-to-ppm
 Convert an mtx file to a PPM file visuzalizing non-zero entries.
+
+* `tools/mtx-to-ppm in.mtx out.ppm 2048`
+  * create `out.ppm` with a visualization of the non-zeros in `in.mtx`. THe longest image dimension will be 2048 pixels.
+* `tools/mtx-to-ppm in.mtx out.ppm 537 223`
+  * create `out.ppm` with a visualization of the non-zeros in `in.mtx`. The image will be 537 by 223 pixels.
+
 PPM files are large, and probably should be converted to another lossless format before distribution.
 A comment will be included in the PMM file with some information about the source matrix and the mapping of non-zeros to pixel values.
 For example:
