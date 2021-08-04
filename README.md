@@ -114,6 +114,55 @@ Entry::i and Entry::j are `Ordinal`, Entry::e is `Scalar`.
 The "additional" non-zeros implied by `hermitian`, `symmetric`, `skew-symmetric` are added to the resulting COO.
 This means that coo.nnz() may not be the number of entries listed in the `.mtx` file.
 
+## Tools
+
+Some tools are provided
+
+### tools/mtx-stats
+Print some statistics about provided mtx files
+
+### tools/mtx-blocks
+Print counts of dense blocks in the provided matrix.
+
+### tools/mtx-to-ppm
+Convert an mtx file to a PPM file visuzalizing non-zero entries.
+PPM files are large, and probably should be converted to another lossless format before distribution.
+A comment will be included in the PMM file with some information about the source matrix and the mapping of non-zeros to pixel values.
+For example:
+```
+# created by github.com/cwpearson/matrix-market/tools/mtx-to-ppm
+# source matrix: 208918 x 208918 w/ 5540838 nnz
+# each pixel approx 102 x 102 entries
+# approx pixel's nnz count vs value
+# each row is pixel value, then nnz count for val ... val+9
+#   0:   482 470 459 448 437 427 417 407 397 388
+#  10:   378 369 360 352 343 335 327 319 312 304
+#  20:   297 290 283 276 269 263 257 251 245 239
+#  30:   233 227 222 217 211 206 201 197 192 187
+#  40:   183 179 174 170 166 162 158 154 151 147
+#  50:   144 140 137 133 130 127 124 121 118 115
+#  60:   113 110 107 105 102 100  97  95  93  91
+#  70:    88  86  84  82  80  78  76  75  73  71
+#  80:    69  68  66  65  63  61  60  59  57  56
+#  90:    54  53  52  51  49  48  47  46  45  44
+# 100:    43  42  41  40  39  38  37  36  35  34
+# 110:    34  33  32  31  30  30  29  28  28  27
+# 120:    26  26  25  24  24  23  23  22  22  21
+# 130:    21  20  20  19  19  18  18  17  17  17
+# 140:    16  16  15  15  15  14  14  14  13  13
+# 150:    13  12  12  12  12  11  11  11  10  10
+# 160:    10  10  10   9   9   9   9   8   8   8
+# 170:     8   8   7   7   7   7   7   7   6   6
+# 180:     6   6   6   6   6   5   5   5   5   5
+# 190:     5   5   5   4   4   4   4   4   4   4
+# 200:     4   4   4   4   3   3   3   3   3   3
+# 210:     3   3   3   3   3   3   3   3   2   2
+# 220:     2   2   2   2   2   2   2   2   2   2
+# 230:     2   2   2   2   2   2   2   2   2   1
+# 240:     1   1   1   1   1   1   1   1   1   1
+# 250:     1   1   1   1   1   0
+```
+
 ## Test Data
 
 * `data/abb313.mtx`: rectangular, coordinate pattern general
