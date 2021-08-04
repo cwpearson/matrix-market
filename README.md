@@ -1,6 +1,6 @@
 # matrix-market
 
-A C++11 single-header Matrix Market reader.
+A C++11 single-header Matrix Market reader (raw file [here](https://raw.githubusercontent.com/cwpearson/matrix-market/master/include/mm/mm.hpp)).
 
 Build examples and tests
 ```bash
