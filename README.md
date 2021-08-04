@@ -2,7 +2,7 @@
 
 A C++11 single-header Matrix Market reader (raw file [here](https://raw.githubusercontent.com/cwpearson/matrix-market/master/include/mm/mm.hpp)).
 
-Build examples and tests
+Build examples and tests (tools are always built)
 ```bash
 mkdir build && cd build
 cmake .. -DMM_BUILD_EXAMPLES=ON -DMM_BUILD_TESTS=ON
