@@ -22,10 +22,9 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
     "Debug" "Release" "MinSizeRel" "RelWithDebInfo")
 endif()
 
-# only static libraries are suported by the device linker?
-# so I think we need STATIC with CUDA_SEPARABLE_COMPILATION
-add_library(mm INTERFACE
-include/mm/mm.hpp)
+#add_library(mm INTERFACE include/mm/mm.hpp)
+add_library(mm INTERFACE)
+target_include_directories(mm INTERFACE include)
 
 # require c++11
 target_compile_features(mm INTERFACE cxx_std_11)
