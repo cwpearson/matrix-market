@@ -38,6 +38,22 @@ using reader_t = MtxReader<Ordinal, Scalar, Offset>;
 using coo_t = reader_t::coo_type;
 using entry_t = coo_t::entry_type;
 
+static double logish(const double x) {
+    if (0 == x) {
+        return 0;
+    } else {
+        return 1 + std::log(x);
+    }
+}
+
+static double inv_logish(const double x) {
+    if (0 == x) {
+        return 0;
+    } else {
+        return std::exp(x - 1);
+    }
+}
+
 int main(int argc, char **argv) {
     if (argc > 5 || argc < 4) {
         std::cerr << "USAGE:\n";
@@ -61,12 +77,16 @@ int main(int argc, char **argv) {
     if (5 == argc) {
         width = std::atoi(argv[3]);
         height = std::atoi(argv[4]);
+        width = std::min(width, int(coo.num_cols()));
+        height = std::min(height, int(coo.num_rows()));
     } else if (4 == argc) {
         if (coo.num_rows() > coo.num_cols()) {
             height = std::atoi(argv[3]);
+            height = std::min(height, int(coo.num_rows()));
             width = double(coo.num_cols()) * height / coo.num_rows() + 0.5;
         } else {
             width = std::atoi(argv[3]);
+            width = std::min(width, int(coo.num_cols()));
             height = double(coo.num_rows()) * width / coo.num_cols() + 0.5;
         }
     }
@@ -90,13 +110,9 @@ int main(int argc, char **argv) {
         hist[py * width + px] += 1.0;
     }
 
-    // log of histogram
+    // ~ log of histogram
     for (size_t i = 0; i < hist.size(); ++i) {
-        double h = hist[i];
-        if (h != 0) {
-            h = std::log2(hist[i]);
-        }
-        hist[i] = h;
+        hist[i] = logish(hist[i]);
     }
 
     // normalize to 0-255
@@ -133,7 +149,7 @@ int main(int argc, char **argv) {
         ss << "approx pixel's nnz count vs value\n";
         ss << "# each row is pixel value, then nnz count for val ... val+9";
 
-        const int fieldWidth = std::ceil(std::log10(std::pow(2, hMax)));
+        const int fieldWidth = std::ceil(std::log10(inv_logish(hMax)));
 
         // pixel values
         for (int i = 0; i <= 255; ++i) {
@@ -147,7 +163,7 @@ int main(int argc, char **argv) {
                 u = 0;
             } else {
                 double h = (255 - i) / 255.0 * hMax;
-                h = std::pow(2.0, h);
+                h = inv_logish(h);
                 u = h + 0.5; // round
             }
             ss << " " << std::setfill(' ') << std::setw(fieldWidth) << u;
