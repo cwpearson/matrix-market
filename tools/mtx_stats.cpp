@@ -20,7 +20,7 @@ int main(int argc, char **argv) {
         std::cerr << "USAGE: " << argv[0] << " input.mtx...\n";
     }
 
-    std::cout << "file,rows,cols,nnz,max abs,diags,bandwidth,diagness,hopkins,err\n";
+    std::cout << "file,rows,cols,nnz,max abs,max nnz/row,avg nnz/row,diags,bandwidth,diagness,hopkins,err\n";
 
     // read as coo data
     for (int arg = 1; arg < argc; ++arg) {
@@ -42,6 +42,41 @@ int main(int argc, char **argv) {
         std::cout << "," << res.num_rows() << "," << res.num_cols() << "," << res.nnz() << std::flush;
 
         // find maximum absolute value of entries
+        {
+            Scalar sMax = -1;
+            for (entry_t &e : res.entries) {
+                sMax = std::max(sMax, std::abs(e.e));
+            }
+            std::cout << "," << sMax << std::flush;
+        }
+
+        // find max nnz per row
+        {
+            // histogram nnz per row
+            std::vector<Ordinal> nnzs(res.num_rows(), 0);
+            for (entry_t &e : res.entries) {
+                ++nnzs[e.i];
+            }
+
+            // find max nnz per row
+            {
+                Ordinal nMax = 0;
+                for (Ordinal u : nnzs) {
+                    nMax = std::max(u, nMax);
+                }
+                std::cout << "," << nMax << std::flush;
+            }
+            // find avg nnz per row
+            {
+                uint64_t acc = 0;
+                for (Ordinal u : nnzs) {
+                    acc += u;
+                }
+                std::cout << "," << double(acc) / res.num_rows() << std::flush;
+            }
+        }
+
+        // find avg
         {
             Scalar sMax = -1;
             for (entry_t &e : res.entries) {
