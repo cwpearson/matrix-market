@@ -90,6 +90,7 @@ The `Scalar` conversions will behave as you expect:
 * `pattern` matrices will yield you `Scalar(1)` as all values
 * If the matrix is `complex` and the `Scalar` is not, the `Scalar` will be equal to the magnitude of the complex number.
 * If `Scalar` is complex and the matrix is not, the imaginary part of the `Scalar` will be 0. 
+* Any explicit zeros in the mtx file will not be included in the resulting non-zero entries.
 
 You can then read the matrix as a COO file
 ```c++
@@ -108,7 +109,7 @@ for (entry_t e : coo.entries) {
     // ...
 }
 ```
-Entries are also tempated over `Ordinal` and `Scalar`.
+Entries are also templated over `Ordinal` and `Scalar`.
 Entry::i and Entry::j are `Ordinal`, Entry::e is `Scalar`.
 
 The "additional" non-zeros implied by `hermitian`, `symmetric`, `skew-symmetric` are added to the resulting COO.
@@ -180,3 +181,4 @@ For example:
 
 This code is released under the GPLv3 license (please see the `LICENSE` file).
 The test matrix data is provided by the SuiteSparse Matrix Collection and is not covered by the license.
+Alternative licensing schemes may be available upon request - please contact the maintainer.

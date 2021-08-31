@@ -1,9 +1,11 @@
+// Copyright (C) 2021 Carl Pearson
+// This code is released under the GPLv3 license
+
 #include "mm/mm.hpp"
 #include "kd.hpp"
 
 #include <algorithm>
 #include <limits>
-// #include <random>
 #include <map>
 
 struct Block {

@@ -1,3 +1,6 @@
+// Copyright (C) 2021 Carl Pearson
+// This code is released under the GPLv3 license
+
 #pragma once
 
 #include <algorithm>
