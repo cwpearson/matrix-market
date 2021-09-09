@@ -79,15 +79,6 @@ int main(int argc, char **argv) {
             }
         }
 
-        // find avg
-        {
-            Scalar sMax = -1;
-            for (entry_t &e : res.entries) {
-                sMax = std::max(sMax, std::abs(e.e));
-            }
-            std::cout << "," << sMax << std::flush;
-        }
-
         // count diagonal entries
         {
             Offset d = 0;
